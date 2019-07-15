@@ -24,8 +24,17 @@ class Game:
     def new(self):
         # Start new game
         self.ALL_SPRITES = pg.sprite.Group()
-        self.player = Player()
+        self.PLATFORMS = pg.sprite.Group()
+        self.player = Player(self)
+        p1 = Platform(GREEN, 0, HEIGHT - 32, WIDTH, 32)
+        p2 = Platform(RED, WIDTH / 2 - 50, HEIGHT * 3 / 4, 100, 20)
+        self.ALL_SPRITES.add(p1)
+        self.PLATFORMS.add(p1)
+        self.ALL_SPRITES.add(p2)
+        self.PLATFORMS.add(p2)
         self.ALL_SPRITES.add(self.player)
+
+        # Lets run the game
         self.run()
 
     def run(self):
@@ -33,13 +42,22 @@ class Game:
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
-            self.events()
             self.update()
+            self.events()
             self.draw()
 
     def update(self):
         # Game loop - Updates
         self.ALL_SPRITES.update()
+
+        # Collide conditionals
+        # Check if hitting playform while falling
+        if self.player.vel.y > 0:
+            hits = pg.sprite.spritecollide(self.player, self.PLATFORMS, False)
+            if hits:
+                self.player.vel.y = 0
+                self.player.pos.y = hits[0].rect.top
+                # self.player.vel.x *= 0.5
 
     def events(self):
         # Game loop - Events
@@ -47,7 +65,9 @@ class Game:
             if e.type == pg.QUIT or e.type == pg.KEYDOWN and e.key == pg.K_ESCAPE:
                 if self.playing:
                     self.playing = False
-                    self.gameON = False
+                self.gameON = False
+            if e.type == pg.KEYDOWN and e.key == pg.K_SPACE:
+                self.player.jump()
 
     def draw(self):
         # Game loop - Draw
