@@ -4,12 +4,23 @@ from settings import *
 vec = pg.math.Vector2
 
 
+class SpriteSheet():
+    # Load spritesheets for parsing.
+    def __init__(self, spritesheet):
+        self.spritesheet = pg.image.load(spritesheet).convert()
+
+    def getImage(self, x, y, width, height):
+        # Extract an image from the loaded spritesheet
+        img = pg.Surface((width, height))
+        img.blit(self.spritesheet, (0, 0), (x, y, width, heigh))
+        return img
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
-        self.game = game # Allows Player class to see Game class via Player(self) in main.py run(). Used in Jump() below.
+        self.game = game  # Allows Player class to see Game class via Player(self) in main.py run(). Used in Jump() below.
         self.image = pg.Surface((30, 40))
-        self.image.fill(YELLOW)
+        self.image.fill((YELLOW))
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
         self.pos = vec(WIDTH / 2, HEIGHT / 2)
@@ -22,7 +33,8 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self, self.game.PLATFORMS, False)
         self.rect.x -= 1
         if hits:
-            self.vel.y = -25
+            pass
+        self.vel.y = -25
 
     def update(self):
         self.acc = vec(0, GRAVETY)
